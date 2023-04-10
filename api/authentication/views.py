@@ -4,26 +4,24 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from .serializers import UserSerializer
 from django.core.mail import EmailMessage
-from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 
 def send_verification_email(user_email, user_name):
-    subject = 'Please verify your account'
-    from_email = 'hsnfrkn32@gmail.com'
     to_email = user_email
     context = {
         'product': 'HFKSHOP',
         'name': user_name,
     }
     html_message = render_to_string('welcome.html', context)
-    plain_message = strip_tags(html_message)
     email = EmailMessage(
-        subject=subject,
-        body=plain_message,
-        from_email=from_email,
+        'Please verify your account',
+        html_message,
+        'hsnfrkn32@gmail.com',
         to=[to_email],
     )
+    email.content_subtype = 'html'
     email.send()
 
 
