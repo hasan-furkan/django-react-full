@@ -38,11 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # 3. parti yazılımlar
     'rest_framework',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
 
+    # Proje uygulamaları
     'authentication',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -87,7 +88,6 @@ DATABASES = {
 }
 
 AUTH_USER_MODEL = 'auth.User'
-
 
 
 # Password validation
