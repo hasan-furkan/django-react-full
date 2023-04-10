@@ -1,0 +1,58 @@
+{
+    "welcome": "Hoşgeldiniz",
+    "login": {
+      "title": "{{name}}'ne Hoşgeldiniz",
+      "comment": "Giriş yapmak için kullanıcı bilginizi giriniz.",
+      "submit": "Giriş",
+      "signup":"Kayıt Ol",
+      "signininstead":"Mevcut hesabınız var mı? Oturum açmayı deneyin.",
+      "privacypolicyandtersm":"Gizlilik politikasını ve şartlarını",
+      "agree":"kabul ediyorum.",
+      "username_or_email": "Kullanıcı Adı/E-posta",
+      "email":"E-Posta",
+      "username": "Kullanıcı Adı",
+      "password": "Şifre",
+      "confirmPassword": "Şifreyi Onayla",
+      "definePassword": "Yeni Şifre Tanımla",
+      "forgot": "Şifremi Unuttum!",
+      "sendresetmail": "Şifre Sıfırlama Maili Gönder",
+      "resetPasswordText": "Lüften şifresini unuttuğunuz hesaba ait E-Mail adresini aşağıdaki alana giriniz",
+      "resetPasswordMailSend": "E-Mail adresinize şifre sıfırlama bağlantısını gönderdik. Mail'de bulunan bağlantıya tıklayarak yeni şifrenizi oluşturabilirsiniz",
+      "resetPasswordMailFail": "Şifre sıfırlama maili gönderilemedi",
+      "remember": "Beni Hatırla",
+      "success": "Sisteme Giriş Yapıldı!",
+      "error": "Kullanıcı Adı veya Şifre Hatalı!",
+      "latestLogin": "Son Giriş",
+      "lockscreen": "Kilit Ekranı",
+      "unlockplease": "Uzun süre işlem yapmadığınız için kilit ekranına yönlendirildiniz. Lütfen tekrar giriş yapmak için şifrenizi giriniz",
+      "login_page": "Giriş Sayfası",
+      "language": "Dil Seçeneği",
+      "errorcodes": {
+        "not_found": "Kullanıcı bulunamadı !",
+        "unexpected_error": "Beklenmedik bir hata oluştu",
+        "no_network_interface": "Ağ bağlantı bilgisi alınamadı",
+        "not_found_booth": "Gişe tanımlaması bulunamadı",
+        "unauthorized_only_allowed_login_on_app": "Yalnızca uygulama üzerinden giriş yapabilirsiniz.",
+        "User Not Found or Wrong Password": "Kullanıcı Adı veya Şifre Hatalı!",
+        "User is not active": "Kullanıcı hesabı aktif değil!"
+      }
+    },
+    "validation": {
+      "notvalid": "{{field}} alanına girmiş olduğunuz ifade geçersiz",
+      "required": "Zorunlu alan",
+      "minString": "{{field}} {{number}} karakterden uzun olmalı",
+      "maxString": "{{field}} {{number}} karakterden uzun olamaz",
+      "minNumber": "{{field}} alanı en az {{number}} olabilir",
+      "maxNumber": "{{field}} alanı en fazla {{number}} olabilir"
+    },
+    "sideMenu": {
+      "management": "Yönetim",
+      "userManagement": "Kullanıcı Yönetimi",
+      "roleManagement": "Rol Yönetimi"
+    },
+    "navbar": {
+      "editProfile": "Profil",
+      "logout": "Çıkış",
+      "closeApp": "Uygulamayı Kapat"
+    }
+  }

@@ -1,0 +1,58 @@
+{
+    "welcome": "Welcome",
+    "login": {
+      "title": "Welcome to {{name}}",
+      "comment": "Please enter your credentials to log-in",
+      "submit": "Sign in",
+      "signup":"Sign Up",
+      "signininstead":"Already have an account? Sign in instead.",
+      "agree":"I agree to",
+      "privacypolicyandtersm":" privacy policy & terms",
+      "username_or_email": "Username/E-mail",
+      "email":"Email",
+      "username": "Username",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "definePassword": "Define New Password",
+      "forgot": "Forgot Password?",
+      "sendresetmail": "Send Password Reset Mail",
+      "resetPasswordText": "Please enter the e-mail address of the account for which you have forgotten the password",
+      "resetPasswordMailSend": "We have sent the password reset link to your e-mail address. You can create your new password by clicking the link in the Mail.",
+      "resetPasswordMailFail ": " Could not send password reset mail",
+      "remember": "Remember Me",
+      "success": "Login Successful",
+      "error": "Username or Password Error!",
+      "latestLogin": "Latest Login",
+      "lockscreen": "Lock Screen",
+      "unlockplease": "You have been directed to the lock screen for a long period of inactivity. Please enter your password to login again.",
+      "login_page": "Login Page",
+      "language": "Language",
+      "errorcodes": {
+        "not_found": "User not found",
+        "unexpected_error": "An unexpected error has occurred",
+        "no_network_interface": "Network information could not be obtained",
+        "not_found_booth": "Box office description not found",
+        "unauthorized_only_allowed_login_on_app": "You can only log in through the app.",
+        "User Not Found or Wrong Password": "Username or Password Error!",
+        "User is not active": "User account is not active!"
+      }
+    },
+    "validation": {
+      "notvalid": "The expression you entered in the {{field}} field is invalid.",
+      "required": "Required",
+      "minString": "{{field}} must be longer than {{number}} characters",
+      "maxString": "The {{field}} must contain a maximum of {{number}} characters",
+      "minNumber": "{{field}} range cannot be less than {{number}}",
+      "maxNumber": "{{field}} range cannot be more than {{number}}"
+    },
+    "sideMenu": {
+      "management": "Management",
+      "userManagement": "User Management",
+      "roleManagement": "Role Management"
+    },
+    "navbar": {
+      "editProfile": "Profile",
+      "logout": "Logout",
+      "closeApp": "Close App"
+    }
+  }
