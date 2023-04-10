@@ -38,6 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'rest_framework',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+
     'authentication',
 ]
 
@@ -81,6 +85,9 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+AUTH_USER_MODEL = 'auth.User'
+
 
 
 # Password validation
