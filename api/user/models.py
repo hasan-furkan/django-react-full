@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 
 # Create your models here.
@@ -9,8 +10,9 @@ from django.db import models
 #               (personel, "Personel"),
 #               )
 
-class UserModals(models.Model):
-    user_full_name = models.CharField(max_length=100, blank=True, null=True)
+class UserModals(AbstractUser):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
     email = models.EmailField(max_length=100)
     password = models.CharField(max_length=100)
     # role = models.CharField(max_length=100, choices=FIRM_NAMES)
@@ -23,4 +25,4 @@ class UserModals(models.Model):
     kvkk_agreement = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return self.first_name + self.last_name
