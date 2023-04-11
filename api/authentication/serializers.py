@@ -1,11 +1,25 @@
-from rest_framework.serializers import ModelSerializer
-from user.models import UserModals
+from rest_framework import serializers, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from user.models import UserModals as User
 
 
-class UserSerializer(ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True)
+
     class Meta:
-        model = UserModals
-        fields = '__all__'
-        extra_kwargs = {'username': {'required': False}, 'first_name': {'required': False},
-                        'last_name': {'required': False}}
+        model = User
+        fields = ['id', 'fullName', 'email', 'password', 'kvkk', 'status', 'deleted', 'isActive', 'loginAttempt']
 
+    def create(self, validated_data):
+        password = validated_data.pop('password', None)
+        instance = self.Meta.model(**validated_data)
+        if password is not None:
+            instance.set_password(password)
+        instance.save()
+        return instance
+
+
+class UserLoginSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(required=True, write_only=True)
