@@ -86,6 +86,8 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('user')
 EMAIL_HOST_PASSWORD = os.getenv('pass')
 
+AUTH_USER_MODEL = 'user.UserModals'
+
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -96,8 +98,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-AUTH_USER_MODEL = 'auth.User'
 
 
 # Password validation
