@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 
     # 3. parti yazılımlar
     'rest_framework',
+    'corsheaders',
 
     # Proje uygulamaları
     'authentication',
@@ -57,6 +58,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
 ]
 
 ROOT_URLCONF = 'hfkshop.urls'
@@ -86,7 +89,11 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('user')
 EMAIL_HOST_PASSWORD = os.getenv('pass')
 
-AUTH_USER_MODEL = 'user.UserModals'
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
 
 
 # Database

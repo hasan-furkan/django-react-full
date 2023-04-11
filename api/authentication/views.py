@@ -1,9 +1,10 @@
-from django.contrib.auth import authenticate, login
 from rest_framework import generics, status
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from django.contrib.auth.hashers import make_password
-from .serializers import UserSerializer
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+
+
+from .serializers import UserSerializer, UserLoginSerializer
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 
@@ -27,49 +28,49 @@ def send_verification_email(user_email, user_name):
     email.send()
 
 
-class RegisterAPIView(generics.CreateAPIView):
-
-    def post(self, request, *args, **kwargs):
-        email = request.data.get('email')
-        password = request.data.get('password')
-        first_name = request.data.get('first_name')
-        last_name = request.data.get('last_name')
-        print('hello', request.data.get)
-        if not all([email, password]):
-            return Response({'error': 'user_full_name, email and password.'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        if User.objects.filter(email=email).exists():
-            return Response({'error': 'This email is already registered.'}, status=status.HTTP_400_BAD_REQUEST)
-        user = User(first_name=first_name, last_name=last_name, username=first_name+last_name, email=email, password=make_password(password))
-        print(user)
-        user.save()
-        serializer = UserSerializer(user)
-        send_verification_email(request.data.get('email'), request.data.get('first_name'))
-
-        return Response({"status": True, "message": serializer.data}, status=status.HTTP_201_CREATED)
-
-
-class LoginAPIView(generics.CreateAPIView):
+class UserRegisterView(APIView):
     serializer_class = UserSerializer
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        login_count = User.objects.get(login_count=request.data.get('login_count'))
-        print(login_count)
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            send_verification_email(request.data.get('email'), request.data.get('fullName'))
+            return Response({
+                "status": True,
+                "message": serializer.data
+            }, status=status.HTTP_201_CREATED)
+        return Response({
+            "status": False,
+            "message": serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
 
-        email = serializer.validated_data['email']
-        password = serializer.validated_data['password']
 
-        user = authenticate(request, email=email, password=password)
+class UserLoginView(APIView):
+    serializer_class = UserLoginSerializer
 
-        if user is None:
-            login_count += 1
-            return Response({"status": False, 'message': 'password or username is wrong'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        elif login_count > 6:
-            return Response({'status': False, 'message': 'You have exceeded the number of login attempts.'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        else:
-            login(request, user)
-            return Response({'message': 'Kullanıcı oturum açtı.'})
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data['email']
+            password = serializer.validated_data['password']
+            user = User.objects.filter(email=email).first()
+            if user is None:
+                return Response({'detail': 'please register'}, status=status.HTTP_401_UNAUTHORIZED)
+            if user.isActive == 'Active':
+                return Response({'detail': 'Inactive user'}, status=status.HTTP_401_UNAUTHORIZED)
+            if user.loginAttempt > 6:
+                user.isActive = False
+                user.save()
+                return Response({'detail': 'You have tried to login too many times. Please try again later.'},
+                                status=status.HTTP_401_UNAUTHORIZED)
+            if not user.check_password(password):
+                user.loginAttempt += 1
+                user.save()
+                return Response({'detail': 'email or password wrong'}, status=status.HTTP_401_UNAUTHORIZED)
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            })
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
