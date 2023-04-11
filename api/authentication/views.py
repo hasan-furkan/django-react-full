@@ -11,13 +11,13 @@ from django.template.loader import render_to_string
 from user.models import UserModals as User
 
 
-def send_verification_email(user_email, user_name):
+def send_verification_email(user_email, user_name, template_name):
     to_email = user_email
     context = {
         'product': 'HFKSHOP',
         'name': user_name,
     }
-    html_message = render_to_string('welcome.html', context)
+    html_message = render_to_string(template_name, context)
     email = EmailMessage(
         'Please verify your account',
         html_message,
@@ -35,7 +35,7 @@ class UserRegisterView(APIView):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            send_verification_email(request.data.get('email'), request.data.get('fullName'))
+            send_verification_email(request.data.get('email'), request.data.get('fullName'), 'confirm-email.html')
             return Response({
                 "status": True,
                 "message": serializer.data
