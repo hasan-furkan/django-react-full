@@ -1,14 +1,14 @@
-from rest_framework import generics, status
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.hashers import make_password, check_password
 
-
-from .serializers import UserSerializer, UserLoginSerializer
+from .serializers import RegisterSerializer
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 
-from user.models import UserModals as User
+from user.models import User
 
 
 def send_verification_email(user_email, user_name, template_name):
@@ -29,9 +29,10 @@ def send_verification_email(user_email, user_name, template_name):
 
 
 class UserRegisterView(APIView):
-    serializer_class = UserSerializer
+    serializer_class = RegisterSerializer
 
     def post(self, request):
+        # hashed_pwd = make_password(request.data.password)
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -46,31 +47,31 @@ class UserRegisterView(APIView):
         }, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserLoginView(APIView):
-    serializer_class = UserLoginSerializer
-
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
-            email = serializer.validated_data['email']
-            password = serializer.validated_data['password']
-            user = User.objects.filter(email=email).first()
-            if user is None:
-                return Response({'detail': 'please register'}, status=status.HTTP_401_UNAUTHORIZED)
-            if user.isActive == 'Active':
-                return Response({'detail': 'Inactive user'}, status=status.HTTP_401_UNAUTHORIZED)
-            if user.loginAttempt > 6:
-                user.isActive = False
-                user.save()
-                return Response({'detail': 'You have tried to login too many times. Please try again later.'},
-                                status=status.HTTP_401_UNAUTHORIZED)
-            if not user.check_password(password):
-                user.loginAttempt += 1
-                user.save()
-                return Response({'detail': 'email or password wrong'}, status=status.HTTP_401_UNAUTHORIZED)
-            refresh = RefreshToken.for_user(user)
-            return Response({
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-            })
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# class UserLoginView(APIView):
+#     serializer_class = UserLoginSerializer
+#
+#     def post(self, request):
+#         serializer = self.serializer_class(data=request.data)
+#         if serializer.is_valid():
+#             email = serializer.validated_data['email']
+#             password = serializer.validated_data['password']
+#             user = User.objects.filter(email=email).first()
+#             if user is None:
+#                 return Response({'detail': 'please register'}, status=status.HTTP_401_UNAUTHORIZED)
+#             if user.isActive == 'Active':
+#                 return Response({'detail': 'Inactive user'}, status=status.HTTP_401_UNAUTHORIZED)
+#             if user.loginAttempt > 6:
+#                 user.isActive = False
+#                 user.save()
+#                 return Response({'detail': 'You have tried to login too many times. Please try again later.'},
+#                                 status=status.HTTP_401_UNAUTHORIZED)
+#             if not user.check_password(password):
+#                 user.loginAttempt += 1
+#                 user.save()
+#                 return Response({'detail': 'email or password wrong'}, status=status.HTTP_401_UNAUTHORIZED)
+#             refresh = RefreshToken.for_user(user)
+#             return Response({
+#                 'refresh': str(refresh),
+#                 'access': str(refresh.access_token),
+#             })
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
