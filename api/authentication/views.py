@@ -57,8 +57,15 @@ class UserLoginView(APIView):
             password = request.data.get('password')
             user = User.objects.filter(email=email).first()
             if user:
+                if user.login_attempt >= 6:
+                    return Response({
+                        'status': False,
+                        'message': 'send to password reset email.'
+                    })
                 if check_password(password, user.password):
                     refresh = RefreshToken.for_user(user)
+                    user.login_attempt = 0
+                    user.save()
                     return Response({
                         "status": True,
                         "message": {
@@ -71,6 +78,9 @@ class UserLoginView(APIView):
                             }
                         }
                     }, status=status.HTTP_200_OK)
+                user.login_attempt += 1
+                user.is_active = False
+                user.save()
                 return Response({
                     "status": False,
                     "message": "Wrong password or email"
