@@ -5,8 +5,12 @@ from user.models import User
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
 
     def create(self, validated_data):
+        if validated_data['password'] != validated_data['confirmPassword']:
+            raise serializers.ValidationError(
+                {'password': 'Passwords must match.'})
         user = User.objects.create(
             email=validated_data['email'],
             full_name=validated_data['full_name'],

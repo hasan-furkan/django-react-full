@@ -9,6 +9,7 @@ import HtmlHead from '../../components/html-head/HtmlHead';
 import registerBg from '../../assets/images/auth/registerBg.jpg';
 import LanguageCountry from '../../components/languageCountry';
 import SvgIcons from '../../svg-icons/SvgIcons';
+import { registerServices } from '../../services/auth';
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
@@ -22,11 +23,16 @@ export default function Register() {
   } = useForm({
     resolver: yupResolver(validationRegisterSchema),
   });
-  const onSubmit = (data, e) => {
+  const onSubmit = async (data, e) => {
     e.preventDefault();
     if (data) {
       if (data.password === data.confirmPassword) {
-        succesToastMessage('basarili');
+        try {
+          await registerServices(data);
+          succesToastMessage('basarili');
+        } catch (error) {
+          errorToastMessage(error);
+        }
       } else {
         warningToastMessage('password not match');
       }
