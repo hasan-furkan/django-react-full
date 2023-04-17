@@ -1,8 +1,8 @@
-from django.contrib.auth import authenticate
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.hashers import make_password, check_password
 
 from .serializers import RegisterSerializer, LoginSerializer
 from django.core.mail import EmailMessage
@@ -35,7 +35,8 @@ class UserRegisterView(APIView):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            send_verification_email(request.data.get('email'), request.data.get('fullName'), 'confirm-email.html')
+            # send_verification_email(request.data.get('email'), request.data.get('fullName'), 'confirm-email.html')
+
             return Response({
                 "status": True,
                 "message": serializer.data
@@ -52,18 +53,33 @@ class UserLoginView(APIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            user = authenticate(
-                request=request,
-                email=serializer.validated_data['email'],
-                password=serializer.validated_data['password']
-            )
-            if user is not None:
-                refresh = RefreshToken.for_user(user)
+            email = request.data.get('email')
+            password = request.data.get('password')
+            user = User.objects.filter(email=email).first()
+            if user:
+                if check_password(password, user.password):
+                    refresh = RefreshToken.for_user(user)
+                    return Response({
+                        "status": True,
+                        "message": {
+                            "refresh": str(refresh),
+                            "access": str(refresh.access_token),
+                            "user": {
+                                "id": user.id,
+                                "email": user.email,
+                                "full_name": user.full_name,
+                            }
+                        }
+                    }, status=status.HTTP_200_OK)
                 return Response({
-                    'refresh': str(refresh),
-                    'access': str(refresh.access_token),
-                })
-            else:
-                return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    "status": False,
+                    "message": "Wrong password or email"
+                }, status=status.HTTP_400_BAD_REQUEST)
+            return Response({
+                "status": False,
+                "message": "User not found"
+            }, status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+            "status": False,
+            "message": serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
