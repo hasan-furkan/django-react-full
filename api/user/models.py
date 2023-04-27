@@ -13,6 +13,7 @@ class User(models.Model):
     is_deleted = models.BooleanField(default=False)
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    token = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.full_name

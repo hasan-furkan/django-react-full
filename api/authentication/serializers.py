@@ -23,6 +23,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ('email', 'password', 'full_name')
 
 
+class UserVerifySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('email', 'full_name')
+
+
 class LoginSerializer(serializers.Serializer):
     class Meta:
         model = User
