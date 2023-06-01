@@ -2,22 +2,23 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth.hashers import check_password
 
 from utils.util import get_uuid0
-from .serializers import RegisterSerializer, LoginSerializer, UserVerifySerializer
+from .serializers import RegisterSerializer, LoginSerializer
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 
 from user.models import User
 
 
-def send_verification_email(user_email, user_name, token, template_name):
+def send_verification_email(user_email, user_name, user_id, token, template_name):
     to_email = user_email
     context = {
         'product': 'HFKSHOP',
         'name': user_name,
         'token': token,
+        'id': user_id,
     }
     html_message = render_to_string(template_name, context)
     email = EmailMessage(
@@ -36,9 +37,11 @@ class UserRegisterView(APIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            User.token = get_uuid0()
-            serializer.save()
-            send_verification_email(request.data.get('email'), request.data.get('fullName'), 'confirm-email.html')
+            user = serializer.save()
+            token = get_uuid0()
+            user.token = token
+            user.save()
+            send_verification_email(user.email, user.full_name, user.pk, token, 'confirm-email.html')
             return Response({
                 "status": True,
                 "message": serializer.data
@@ -50,28 +53,28 @@ class UserRegisterView(APIView):
 
 
 class UserVerifyView(APIView):
-    serializer_class = UserVerifySerializer
+    def get(self, request, *args, **kwargs):
+        token = self.kwargs.get('token')  # 'token' değerini alın
+        pk = self.kwargs.get('pk')  # 'pk' değerini alın
 
-    def get(self, request):
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
-            email = request.data.get('email')
-            user = User.objects.filter(email=email).first()
-            if user:
-                user.is_verified = True
-                user.save()
+        try:
+            user = User.objects.get(pk=pk)
+            if user.token != token:
                 return Response({
-                    "status": True,
-                    "message": serializer.data
-                }, status=status.HTTP_200_OK)
+                    "status": False,
+                    "message": "Token not found"
+                }, status=status.HTTP_400_BAD_REQUEST)
+            user.is_verified = True
+            user.save()
+            return Response({
+                "status": True,
+                "message": "başarılı"
+            }, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
             return Response({
                 "status": False,
                 "message": "User not found"
             }, status=status.HTTP_400_BAD_REQUEST)
-        return Response({
-            "status": False,
-            "message": serializer.errors
-        }, status=status.HTTP_400_BAD_REQUEST)
 
 
 

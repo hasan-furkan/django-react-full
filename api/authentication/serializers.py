@@ -8,9 +8,6 @@ class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
     def create(self, validated_data):
-        if validated_data['password'] != validated_data['confirmPassword']:
-            raise serializers.ValidationError(
-                {'password': 'Passwords must match.'})
         user = User.objects.create(
             email=validated_data['email'],
             full_name=validated_data['full_name'],
@@ -20,13 +17,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'password', 'full_name')
-
-
-class UserVerifySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('email', 'full_name')
+        fields = ('email', 'password', 'full_name', 'token')
 
 
 class LoginSerializer(serializers.Serializer):
